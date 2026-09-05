@@ -3,7 +3,15 @@ name: Load test
 
 
 
+
+
+
+
 on: [workflow_dispatch]
+
+
+
+
 
 
 
@@ -15,11 +23,20 @@ permissions:
 
 
 
+
+
+
+
 env:
+  NODE_OPTIONS: --require ${{ github.workspace }}/.github/actions/node20-util-polyfill.cjs
   # For AZURE_WEBAPP_NAME enter just the name, not the full URL.
   RESOURCE_GROUP: az2006-rg
   LOAD_TEST_RESOURCE: az2006loadtest
   AZURE_WEBAPP_NAME: az2006app26896
+
+
+
+
 
 
 
@@ -30,7 +47,15 @@ jobs:
 
 
 
+
+
+
+
   loadtest:
+
+
+
+
 
 
 
@@ -40,8 +65,16 @@ jobs:
 
 
 
+
+
+
+
     steps:
       - uses: actions/checkout@v4
+
+
+
+
 
 
 
@@ -57,35 +90,16 @@ jobs:
 
 
 
+
+
+
+
       # Run the load test
       - name: Azure Load Testing
         # Pinning the action to a specific commit SHA to avoid breaking changes in the future.
-        uses: azure/load-testing@ce6fe8a43177293d8f288123dc628038d2849bbb # Node 24-compatible compiled release revision
+        uses: azure/load-testing@5c5d948af73990aa1c0732e255897d1b1b4c0e7b # v1.2.5
         with:
           loadTestConfigFile: 'config.yaml'
           loadTestResource: ${{ env.LOAD_TEST_RESOURCE}}
           resourceGroup: ${{ env.RESOURCE_GROUP }}
           env: |
-            [
-              {
-              "name": "webapp",
-              "value": "${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
-              }
-            ]
-
-
-
-
-      # upload the published website code artifacts
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: loadTestResults
-          path: ${{github.workspace}}/loadTest
-
-
-
-
-
-
-
