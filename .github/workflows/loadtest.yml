@@ -1,10 +1,13 @@
 name: Load test
 
+
 on: [workflow_dispatch]
+
 
 permissions:
   id-token: write # Require write permission to Fetch an OIDC token.
   contents: read  # This is required for actions/checkout
+
 
 env:
   # For AZURE_WEBAPP_NAME enter just the name, not the full URL.
@@ -12,15 +15,20 @@ env:
   LOAD_TEST_RESOURCE: az2006loadtest
   AZURE_WEBAPP_NAME: az2006app26896
 
+
 jobs:
   # This workflow consists of a single job called "loadtest"
 
+
   loadtest:
+
 
     runs-on: ubuntu-latest
 
+
     steps:
       - uses: actions/checkout@v4
+
 
       #Login in your azure subscription using OpenID Connect (credentials stored as GitHub secrets in repo)
       - name: Azure Login
@@ -30,10 +38,11 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+
       # Run the load test
       - name: Azure Load Testing
         # Pinning the action to a specific commit SHA to avoid breaking changes in the future.
-        uses: azure/load-testing@5c5d948af73990aa1c0732e255897d1b1b4c0e7b # v1.2.5
+        uses: azure/load-testing@09c53cb9c4bea539ae8634dc76673a36474e250c # Node 24-compatible upstream revision
         with:
           loadTestConfigFile: 'config.yaml'
           loadTestResource: ${{ env.LOAD_TEST_RESOURCE}}
@@ -46,11 +55,15 @@ jobs:
               }
             ]
 
+
       # upload the published website code artifacts
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: loadTestResults
           path: ${{github.workspace}}/loadTest
+
+
+
 
 
